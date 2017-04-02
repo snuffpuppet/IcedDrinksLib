@@ -59,3 +59,59 @@ Since Google Sheets were familiar to everyone in the cafe and held the possibili
 These can all be run manually from a menu on the Build Preview sheet and are run automatically on both Mondays and Thursdays.
 
 Access to the spreadsheet fields are done through named ranges which must match the configured items to which they allow access. e.g. if there is a drink called 'dairyChoc' in the configured drinks to manage, then there must be named ranges of the same name on the Build Tables (Monday and Thursday) and the Build Preview table (Tracker).
+
+## Object Model
+The utility functions based on the three operations mentioned above are in the code_s.js file. The other files make up the object model used to interract with the spreadsheets and some utility functions. Originally I intended to put the object model in its own library but the Script Debugger couldn't handle it so I had to combine it all.
+
+### BuildTable
+A lightweight constructor object giving access to the data in a build table. Can be used to pull out all the info for the history logging or to set new build targets. Uses:
+1. **BuildSummary**
+
+   A comprehensive representation of the entire build - used for the history tables
+   
+2. **DrinksSummary**
+
+   To set new targets for the build sheet
+   
+### BuildPreview
+A lightweight constructor object allowing access to the data in the Build Preview sheet. Uses:
+1. **DrinksSummary**
+
+   To pull and push build target info into the various columns
+
+### BuildHistory
+A lightweight constructor object allowing access to the main History table. Uses:
+1. **BuildSummary**
+
+   To both retrieve and append comprehensive build snapshots
+
+### BuildHistoryTotals
+A lightweight constructor object giving access to the Totals or summary history rows. This summarieses the individual cafe's builds for easy human review. Uses:
+1. **BuildSummary**
+
+   To append info needed for table
+
+### BuildSummary
+A representation of an entire build accross multiple cafes. Used for build calculations and for populating the history tables
+
+### DrinksSummary
+A representations of a specific aspect of a build accross multiple cafes. Used to represent build targets that are synced into the preview table and also pushed accross to the production build sheets
+
+### SiteBuild
+A drinks build for a single site. Used mainly in construction of and navigating through a BuildSummary object
+
+### IcedDrinks
+A collection of Iced drinks and their counts. Used as part of a DrinksSummary or BuildSummary
+
+### Site
+A helper object providing some offset information for accessing data for the site it represents
+
+## Utility Functions
+Some helper functions maing things easier
+
+### getConfig
+Returns an opject containing all the configuration for the system
+
+### getFileIds / getTestFileIds
+Returns an object with the Spreadsheet Ids needed for the system. Production or testing files can be used
+
