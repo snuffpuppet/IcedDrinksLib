@@ -13,6 +13,8 @@ Since Google Sheets were familiar to everyone in the cafe and held the possibili
 1. **The Monday Build Table**
 
    Fridge stock levels are filled out in this spreadsheet on Mondays by cafe staff and it tells both the bottling team and the cafe staff how much raw ingredients need to be prepared for the build that night. It also contains other calculations for the bottling crew to assist the process.
+   ![build-table](https://cloud.githubusercontent.com/assets/5311341/24587099/65cc08ae-17f3-11e7-9c80-a6094fd59831.png)
+
 
 2. **The Thursday Build Table**
 
