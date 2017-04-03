@@ -6,7 +6,8 @@
 function logMondayBuild(fileIds)
 {
   var config = getConfig(fileIds.tracker);
-  Logger = BetterLog.useSpreadsheet("112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
+  if (fileIds.log)
+    Logger = BetterLog.useSpreadsheet(fileIds.log);
   
   logBuild(1);
   generateTargets(2);
@@ -22,7 +23,7 @@ function logMondayBuild(fileIds)
 function logThursdayBuild(fileIds)
 {
   var config = getConfig(fileIds.tracker);
-  Logger = BetterLog.useSpreadsheet("112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
+  if (fileIds.log)     Logger = BetterLog.useSpreadsheet(fileIds.log);
   
   logBuild(2, fileIds);
   generateTargets(1, fileIds);
@@ -36,7 +37,8 @@ function logThursdayBuild(fileIds)
  * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
 function generateMondayTargets(fileIds) {
-  Logger = BetterLog.useSpreadsheet("112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
+  if (fileIds.log)    
+    Logger = BetterLog.useSpreadsheet(fileIds.log);
   generateTargets(1, fileIds);
 }
 
@@ -45,7 +47,8 @@ function generateMondayTargets(fileIds) {
  * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
 function generateThursdayTargets(fileIds) {
-  Logger = BetterLog.useSpreadsheet("112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
+  if (fileIds.log) 
+    Logger = BetterLog.useSpreadsheet(fileIds.log);
   generateTargets(2, fileIds);
 }
 
@@ -54,7 +57,8 @@ function generateThursdayTargets(fileIds) {
  * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
 function pushMondayTargets(fileIds) {
-  Logger = BetterLog.useSpreadsheet("112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
+  if (fileIds.log)     
+    Logger = BetterLog.useSpreadsheet(fileIds.log);
   pushTargets(1, fileIds);
 }
 
@@ -63,7 +67,8 @@ function pushMondayTargets(fileIds) {
  * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
 function pushThursdayTargets(fileIds) {
-  Logger = BetterLog.useSpreadsheet("112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
+  if (fileIds.log)     
+    Logger = BetterLog.useSpreadsheet(fileIds.log);
   pushTargets(2, fileIds);
 }
 
