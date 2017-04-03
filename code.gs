@@ -1,10 +1,11 @@
 /*
  * Automatic event entry point to log the build, generate new targets, 
  * sync them with the preview table and then push them to the Build Table
+ * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
-function logMondayBuild()
+function logMondayBuild(fileIds)
 {
-  var config = getConfig(getFileIds().tracker);
+  var config = getConfig(fileIds.tracker);
   Logger = BetterLog.useSpreadsheet("112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
   
   logBuild(1);
@@ -16,61 +17,65 @@ function logMondayBuild()
 /*
  * Automatic event entry point to log the build, generate new targets, 
  * sync them with the preview table and then push them to the Build Table
+ * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
-function logThursdayBuild()
+function logThursdayBuild(fileIds)
 {
-  var config = getConfig(getFileIds().tracker);
+  var config = getConfig(fileIds.tracker);
   Logger = BetterLog.useSpreadsheet("112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
   
-  logBuild(2);
-  generateTargets(1);
+  logBuild(2, fileIds);
+  generateTargets(1, fileIds);
   if (config.pushTargets == "y")
-    pushTargets(1);
+    pushTargets(1, fileIds);
 
 }
 
 /*
  * Spreadsheet Menu entry poiont for manually generating targets to the Build Preview Table
+ * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
-function generateMondayTargets() {
+function generateMondayTargets(fileIds) {
   Logger = BetterLog.useSpreadsheet("112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
-  generateTargets(1);
+  generateTargets(1, fileIds);
 }
 
 /*
  * Spreadsheet Menu entry poiont for manually generating targets to the Build Preview Table
+ * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
-function generateThursdayTargets() {
+function generateThursdayTargets(fileIds) {
   Logger = BetterLog.useSpreadsheet("112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
-  generateTargets(2);
+  generateTargets(2, fileIds);
 }
 
 /*
  * Spreadsheet Menu entry poiont for manually pushing the Build Preview targets to the production build Sheet
+ * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
-function pushMondayTargets() {
+function pushMondayTargets(fileIds) {
   Logger = BetterLog.useSpreadsheet("112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
-  pushTargets(1);
+  pushTargets(1, fileIds);
 }
 
 /*
  * Spreadsheet Menu entry poiont for manually pushing the Build Preview targets to the production build Sheet
+ * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
-function pushThursdayTargets() {
+function pushThursdayTargets(fileIds) {
   Logger = BetterLog.useSpreadsheet("112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
-  pushTargets(2);
+  pushTargets(2, fileIds);
 }
 
 /*
  * logBuild - log a Build Table Sheet to the history tables
  * @param {int} buildId - the build Id (buid sheet) of the build we are logging
- * @param {Object} optFileIds - optionally override the default production files being used
+ * @param {Object} fileIds - Spreadsheet file Ids to work on
  */
-function logBuild(buildId, optFileIds)
+function logBuild(buildId, fileIds)
 {
   ASSERT_TRUE(typeof buildId == "number");
   
-  var fileIds = typeof optFileIds == "undefined" ? getFileIds() : optFileIds;
   var trackerId = fileIds.tracker;
   var buildSheetId = buildId==1 ? fileIds.mondayBuild : fileIds.thursdayBuild;
   var config = getConfig(trackerId);
@@ -124,13 +129,12 @@ function logBuild(buildId, optFileIds)
  *                      and what's in the fridge
  * generatetargets
  * @param {int} buildId - the build Id (buid sheet) of the build we are logging
- * @param {Object} optFileIds - optionally override the default production files being used
+ * @param {Object} fileIds - Spreadsheet filesIds being used
  */
-function generateTargets(buildId, optFileIds) 
+function generateTargets(buildId, fileIds) 
 {
   ASSERT_TRUE(typeof buildId == "number" && (buildId == 1 || buildId == 2), "generateTargets: buildId must be either 1 or 2");
   
-  var fileIds = typeof optFileIds == "undefined" ? getFileIds() : optFileIds;
   var config = getConfig(fileIds.tracker);
     
   var workingBuildId = buildId == 1 ? 2 : 1; // Sold data for this buildId are on the opposite buildId's rows
@@ -180,7 +184,7 @@ function generateTargets(buildId, optFileIds)
   }
   
   // Now we have new build targets for all the sites, push them to the build preview
-  var preview = new BuildPreview(optFileIds);
+  var preview = new BuildPreview(fileIds);
   preview.setNewTargets(buildId, targets);
   
 }
@@ -219,10 +223,9 @@ function getAverageSold(siteNames, drinkTypes, soldHistory, INCLUDE_DEAD)
 /*
  * pushTargets - push targets from Build Preview to the production Build table sheets
  * @param {int} buildId - the build Id (buid sheet) we are pushing to
- * @param {Object} optFileIds - optionally override the default production files being used
+ * @param {Object} fileIds - Spreadsheet files Ids being used
  */
-function pushTargets(buildId, optFileIds) {
-  var fileIds = typeof optFileIds == "undefined" ? getFileIds() : optFileIds;
+function pushTargets(buildId, fileIds) {
   var config = getConfig(fileIds.tracker);
   
   var preview = new BuildPreview(fileIds);

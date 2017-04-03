@@ -1,22 +1,17 @@
 /*
  * Provide a single access point for the Spreadsheet fileIds used in the Iced Drinks project
  * These are the PRODUCTION file Ids
+ * 
+ * @param {string} opTrackerId - tracker spreadsheetId value to override default
+ * @param {string} opMondayId - Monday Build Table spreadsheetId value to override default
+ * @param {string} opThursdayId - Thursday Build Table spreadsheetId value to override default
  * @returns {Object} - an object with properties containing the SpreadSheet Ids for the project
  */
-function getFileIds()
+function getFileIds(trackerId, mondayId, thursdayId)
 {
-  return {tracker: "1Ot_w-t0raqORz3P0RWHZzutR8j1JqdELeOIctXKGYZY", 
-          mondayBuild: "1g5VBsASR6b9KgUSwB-r9OW64AGrAU1L9ga_3j46_Nos", 
-          thursdayBuild: "1XL1pSr63mjCVO6JJpOBowbiDlC0CCIHLrf7yKI__bew"};
+  ASSERT_TRUE(typeof trackerId === "string", "getFields: tracketId argument must be a string");
+  ASSERT_TRUE(typeof mondayId === "string", "getFields: mondayId argument must be a string");
+  ASSERT_TRUE(typeof thursdayId === "string", "getFields: thursdayId argument must be a string");
+  return {tracker: trackerId, mondayBuild: mondayId, thursdayBuild: thursdayId};
 }
 
-/*
- * Dev & testing file Ids
- * @returns {Object} - an object with properties containing the SpreadSheet Ids for the project
- */
-function getTestFileIds()
-{
-  return {tracker: "15DAYupfP7jqWa7zfbP3MgavGRRWazooZIQOg00v5qmE", 
-          mondayBuild: "1nmiYTDyy16s0qRBjKT51tYNvPoP7TVj5XnKbGd6EtDw", 
-          thursdayBuild: "1nmiYTDyy16s0qRBjKT51tYNvPoP7TVj5XnKbGd6EtDw"};
-}

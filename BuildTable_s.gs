@@ -11,9 +11,9 @@
  *
  * @constructor
  * @param {int} buildId - the build Id of thetable we are linked to
- * @param {Object} optFileIds - optional object containing Spreadsheet Ids for the Iced Drinks files
+ * @param {Object} fileIds - Spreadsheet file Ids for the Iced Drinks files
 */
-function BuildTable(buildId, optFileIds) {
+function BuildTable(buildId, fileIds) {
   this.buildSheet = null;
   this.buildId = -1;
   this.sheetId = null;
@@ -25,7 +25,6 @@ function BuildTable(buildId, optFileIds) {
   ASSERT_TRUE(typeof buildId == "number", "Valid buildId missing from BuildTable Constructor");
   ASSERT_TRUE(buildId == 1 || buildId == 2, "Unrecognised buildId in BuildTable Constructor '" + buildId + "'");
 
-  var fileIds = typeof optFileIds == "undefined" ? fileIds = getFileIds() : optFileIds;
   var buildSheetId = buildId == 1 ? fileIds.mondayBuild : fileIds.thursdayBuild;
     
   this.buildSheet = SpreadsheetApp.openById(buildSheetId);

@@ -2,11 +2,9 @@
  * CONSTRUCTOR object BuildPreview
  * Lightweight mapping from the BuildPreview sheet (Iced Drinks build staging area) to logical operations on actual table
  * @constructor
- * @param {object} optFileIds - an optional fileIds object with the iced drinks spreadsheet ids
+ * @param {object} fileIds - iced drinks spreadsheet file ids
  */
-function BuildPreview(optFileIds) {
-  var fileIds = typeof optFileIds == "undefined" ? fileIds = getFileIds() : optFileIds;
-  
+function BuildPreview(fileIds) {
   this.drinksTrackerId = fileIds.tracker;
   this.previewSheet = null;
   

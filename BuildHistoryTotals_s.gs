@@ -2,10 +2,9 @@
  * CONSTRUCTOR object accessor allowing operations on the Build History Totals table
  * Build History Totals is a summary table showing the overall performance of the sites
  * @constructor
- * @param {Object} optFileIds - (returned by getFileIds) optionally override the files used for IcedDrinks access
+ * @param {Object} fileIds - (returned by getFileIds) the files Ids used for IcedDrinks access
  */
-function BuildHistoryTotals(optFileIds) {
-  var fileIds = typeof optFileIds == "undefined" ? fileIds = getFileIds() : optFileIds;
+function BuildHistoryTotals(fileIds) {
   var sheetId = fileIds.tracker;
   this.ssTracker = SpreadsheetApp.openById(sheetId);
   ASSERT_TRUE(this.ssTracker != null, "No tracker spreadsheet found with id '" + sheetId + "'");

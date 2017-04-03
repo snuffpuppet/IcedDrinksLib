@@ -3,10 +3,9 @@
  * Build History is the history of previous builds and allows us to go back and look
  * at our trends to modify current or future builds
  * @constructor
- * @param {Object} optFileIds - optionally specifiy the SpreadSheet Ids to be used for access
+ * @param {Object} fileIds - SpreadSheet Ids to be used for access
  */
-function BuildHistory(optFileIds) {
-  var fileIds = (typeof optFileIds == "undefined" ? getFileIds() : optFileIds);
+function BuildHistory(fileIds) {
   this.sheetId = fileIds.tracker;
 
   this.ssTracker = SpreadsheetApp.openById(this.sheetId);

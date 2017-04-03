@@ -13,9 +13,9 @@ function tDrinksExpected(drinks, expected) {
   return true;
 }
 
-function tBuildPreview(config, testSheet) {
+function tBuildPreview(config, fileIds) {
   var drinkTypes = config["drinkTypes"];
-  var bp = new BuildPreview(testSheet);
+  var bp = new BuildPreview(fileIds);
   //var bunker = new Site(config, "bunker");
   //var jmh = new
   var expected = [{soy: 58,fc: 114,fcTriple:54,light:33,darkChoc:22,darkMocha:20,darkSoyChoc:null,dairyChoc:26,dairyChocFlav:null},
@@ -44,7 +44,7 @@ function tBuildPreview(config, testSheet) {
   return true;
 }
 
-function tBuildTable(config, buildSheetId)
+function tBuildTable(config, fileIds)
 {
   var e_buildTo = [{soy: 62,fc: 129,fcTriple:37,light:33,darkChoc:29,darkMocha:27,dairyChoc:41},
                    {soy: 34,fc: 36,fcTriple:59,light:21,darkChoc:10,darkMocha:15,dairyChoc:10}];
@@ -56,7 +56,7 @@ function tBuildTable(config, buildSheetId)
   var drinkTypes = config["drinkTypes"];
   var siteNames = config["sites"];
   var sites = new Sites(siteNames);
-  var bp = new BuildTable(2, buildSheetId);
+  var bp = new BuildTable(2, fileIds);
   var summary = bp.getBuildSummary(sites, drinkTypes);
   
   for (var i=0; i<sites.siteNames.length; i++) {
@@ -69,16 +69,16 @@ function tBuildTable(config, buildSheetId)
 }
 
 
-function tLogHistory(config, testBuildSheetId, testTrackerId)
+function tLogHistory(config, fileIds)
 {
   var sites = new Sites(config.sites);
-  var buildTable = new BuildTable(1, testBuildSheetId); // testing against the thursday build for funs
+  var buildTable = new BuildTable(1, fileIds); // testing against the thursday build for funs
   //var buildTable = new BuildTable(1);
   var summary = buildTable.getBuildSummary(sites, config.drinkTypes);
   
   // Have the current build summary, now need to calculate the 'sold' values
-  var history = new BuildHistory(testTrackerId);
-  var totals = new BuildHistoryTotals(testTrackerId);
+  var history = new BuildHistory(fileIds);
+  var totals = new BuildHistoryTotals(fileIds);
   
   var prevSummary = history.getPrevBuildSummary(config.sites, config.drinkTypes, summary.buildId == 1 ? 2 : 1);
   
@@ -107,9 +107,9 @@ function tLogHistory(config, testBuildSheetId, testTrackerId)
   return true;
 }
 
-function tGetPrevBuild(config, testTrackerId)
+function tGetPrevBuild(config, fileIds)
 {
-  var history = new BuildHistory(testTrackerId);
+  var history = new BuildHistory(fileIds);
   var summary = history.getPrevBuildSummary(config.sites, config.drinkTypes, 1);
   Logger.log(summary);
 }
@@ -138,11 +138,10 @@ function tBuildHistory(config, fileIds)
   Logger.log(summaries);
 }
 
-function tGenerateTargets(buildId, optFileIds)
+function tGenerateTargets(buildId, fileIds)
 {
   ASSERT_TRUE(typeof buildId == "number" && (buildId == 1 || buildId == 2), "generateTargets: buildId must be either 1 or 2");
   
-  var fileIds = typeof optFileIds == "undefined" ? getFileIds() : optFileIds;
   var config = getConfig(fileIds.tracker);
     
   var workingBuildId = buildId == 1 ? 2 : 1; // Sold data for this buildId are on the opposite buildId's rows
@@ -165,14 +164,16 @@ function tGenerateTargets(buildId, optFileIds)
 }
 
 function doTests() {
-  var testFileIds = getTestFileIds();
+  // Dev & testing file Ids
+  var testFileIds = getFileIds("15DAYupfP7jqWa7zfbP3MgavGRRWazooZIQOg00v5qmE", "1nmiYTDyy16s0qRBjKT51tYNvPoP7TVj5XnKbGd6EtDw", "1nmiYTDyy16s0qRBjKT51tYNvPoP7TVj5XnKbGd6EtDw");
+
   var config = getConfig(testFileIds.tracker);
   
-  //ASSERT_TRUE(tBuildPreview(config, testTrackerId), "tBuildPreview failed");
-  //ASSERT_TRUE(tBuildTable(config, testBuildSheetId), "tBuildTable failed");
-  //ASSERT_TRUE(tLogHistory(config, testBuildSheetId, testTrackerId), "tLogHistory failed");
-  //translateBuildHistory(config, testTrackerId, 10)
-  //tGetPrevBuild(config, testTrackerId);
+  //ASSERT_TRUE(tBuildPreview(config, testFileIds), "tBuildPreview failed");
+  //ASSERT_TRUE(tBuildTable(config, testFileIds), "tBuildTable failed");
+  //ASSERT_TRUE(tLogHistory(config, testFileIds), "tLogHistory failed");
+  //translateBuildHistory(config, testFileIds, 10)
+  //tGetPrevBuild(config, testFileIds);
   //tBuildHistory(config, testFileIds);
   //generateTargets(1, testFileIds);
   //tGenerateTargets(1, testFileIds);
