@@ -27,11 +27,21 @@ function DrinksSummary(date, siteNames, drinkTypes) {
   }
 }
 
-/*
- * Stringify the DrinksSummary object for printing
- * @returns {string}
- */
 DrinksSummary.prototype = {
+  /*
+  * Add iced drinks into the DrinksSummary object
+  * @param {int} siteId - the site that the drinks belong to
+  * @param {Object} drinks - the drinks to add (IcedDrinks object)
+  */
+  addDrinks: function(siteId, drinks)
+  {
+    ASSERT_TRUE(siteId >= 0 && siteId < this.numSites, "DrinksSummary.addDrinks: invalid siteId:" + siteId);
+    this.site[siteId].drinks = drinks;
+  },
+  /*
+   * Stringify the DrinksSummary object for printing
+   * @returns {string}
+   */
   toString: function()
   {
     var s="DS (" + this.date + ")\n"

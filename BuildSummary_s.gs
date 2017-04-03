@@ -28,6 +28,23 @@ BuildSummary.prototype = {
   },
   
   /*
+   * getBuildIdSummary:
+   * generate a DrinksSummary object for the buildTo section of this BuildSummary
+   * @param {string[]} drinkTypes - the list of configured drink types we are working with
+   * @returns {Object} - a DrinksSummary object
+   */
+  getBuildToSummary: function(drinkTypes) {
+    var dSum = new DrinksSummary(this.date, this.siteNames, drinkTypes);
+    ASSERT_TRUE(this.numSites > 0, "BuildSummary.getBuildToSummary - BuildSummary has no sites, cannot get drinks");
+    
+    for (var si=0; si< this.numSites; si++) {
+      dSum.addDrinks(si, this.site[si].buildTo);
+    }
+    
+    return dSum;
+  },
+  
+  /*
    * toString: stringify the object for debugging purposes
    * @returns {string}
    */

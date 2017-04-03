@@ -23,7 +23,8 @@ function logMondayBuild(fileIds)
 function logThursdayBuild(fileIds)
 {
   var config = getConfig(fileIds.tracker);
-  if (fileIds.log)     Logger = BetterLog.useSpreadsheet(fileIds.log);
+  if (fileIds.log)    
+    Logger = BetterLog.useSpreadsheet(fileIds.log);
   
   logBuild(2, fileIds);
   generateTargets(1, fileIds);
@@ -192,6 +193,9 @@ function generateTargets(buildId, fileIds)
   var preview = new BuildPreview(fileIds);
   preview.setNewTargets(buildId, targets);
   
+  // grab the last build done for this same buildId to update the prev fields
+  var prevBuild = history.getBuildSummary(config.sites, config.drinkTypes, buildId);
+  preview.setPrevTargets(buildId, prevBuild.getBuildToSummary(config.drinkTypes));
 }
 
 /*
@@ -219,7 +223,7 @@ function getAverageSold(siteNames, drinkTypes, soldHistory, INCLUDE_DEAD)
   }
   var numBuilds = soldHistory.length;
   for (siteNum=0; siteNum < siteNames.length; siteNum++) {
-    avgSold.site[siteNum].drinks.applyCoefficient(1/numBuilds);
+    avgSold.site[siteNum].drinks.applyCoefficient(1/(soldHistory.length < numBuilds ? soldHistory.length : numBuilds));
   }
 
   return avgSold;

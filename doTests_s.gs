@@ -159,13 +159,13 @@ function tGenerateTargets(buildId, fileIds)
   // apply configured adjustment based on config and build sheet being calculated
   var ADJ_FACTOR = buildId==1 ? config.monFactor : config.thuFactor;
   var ZERO_BUMP_UP = typeof config.zeroBumpUp != "undefined" ? config.zeroBumpUp : 0;
-
-  Logger.log("here");
 }
 
 function doTests() {
   // Dev & testing file Ids
-  var testFileIds = getFileIds("15DAYupfP7jqWa7zfbP3MgavGRRWazooZIQOg00v5qmE", "1nmiYTDyy16s0qRBjKT51tYNvPoP7TVj5XnKbGd6EtDw", "1nmiYTDyy16s0qRBjKT51tYNvPoP7TVj5XnKbGd6EtDw");
+  var testFileIds = getFileIds("1Ot_w-t0raqORz3P0RWHZzutR8j1JqdELeOIctXKGYZY", 
+                               "1g5VBsASR6b9KgUSwB-r9OW64AGrAU1L9ga_3j46_Nos", 
+                               "1XL1pSr63mjCVO6JJpOBowbiDlC0CCIHLrf7yKI__bew");
 
   var config = getConfig(testFileIds.tracker);
   
@@ -177,4 +177,6 @@ function doTests() {
   //tBuildHistory(config, testFileIds);
   //generateTargets(1, testFileIds);
   //tGenerateTargets(1, testFileIds);
+  generateMondayTargets(testFileIds);
+  //generateThursdayTargets(testFileIds);
 }
