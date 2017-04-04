@@ -3,16 +3,16 @@
  * sync them with the preview table and then push them to the Build Table
  * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
-function logMondayBuild(fileIds)
+function mondayBuildTrigger(fileIds)
 {
   var config = getConfig(fileIds.tracker);
   if (fileIds.log)
     Logger = BetterLog.useSpreadsheet(fileIds.log);
   
-  logBuild(1);
-  generateTargets(2);
+  logMondayBuild(fileIds);
+  generateTargets(2, fileIds);
   if (config.pushTargets == "y")
-    pushTargets(2);
+    pushTargets(2, fileIds);
 }
 
 /*
@@ -20,17 +20,35 @@ function logMondayBuild(fileIds)
  * sync them with the preview table and then push them to the Build Table
  * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
-function logThursdayBuild(fileIds)
+function thursdayBuildTrigger(fileIds)
 {
   var config = getConfig(fileIds.tracker);
   if (fileIds.log)    
     Logger = BetterLog.useSpreadsheet(fileIds.log);
   
-  logBuild(2, fileIds);
+  logThursdayBuild(fileIds);
   generateTargets(1, fileIds);
   if (config.pushTargets == "y")
     pushTargets(1, fileIds);
 
+}
+
+/*
+ * Menu entry point to manually log a build
+ * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
+ */
+function logMondayBuild(fileIds)
+{
+  logBuild(1, fileIds);
+}
+
+/*
+ * Menu entry point to manually log a build
+ * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
+ */
+function logThursdayBuild(fileIds)
+{
+  logBuild(2, fileIds);
 }
 
 /*
@@ -81,6 +99,7 @@ function pushThursdayTargets(fileIds) {
 function logBuild(buildId, fileIds)
 {
   ASSERT_TRUE(typeof buildId == "number");
+  ASSERT_TRUE(typeof fileIds !== "undefined");
   
   var trackerId = fileIds.tracker;
   var buildSheetId = buildId==1 ? fileIds.mondayBuild : fileIds.thursdayBuild;
@@ -140,6 +159,7 @@ function logBuild(buildId, fileIds)
 function generateTargets(buildId, fileIds) 
 {
   ASSERT_TRUE(typeof buildId == "number" && (buildId == 1 || buildId == 2), "generateTargets: buildId must be either 1 or 2");
+  ASSERT_TRUE(typeof fileIds !== "undefined");
   
   var config = getConfig(fileIds.tracker);
     
@@ -235,6 +255,9 @@ function getAverageSold(siteNames, drinkTypes, soldHistory, INCLUDE_DEAD)
  * @param {Object} fileIds - Spreadsheet files Ids being used
  */
 function pushTargets(buildId, fileIds) {
+  ASSERT_TRUE(typeof buildId == "number");
+  ASSERT_TRUE(typeof fileIds !== "undefined");
+
   var config = getConfig(fileIds.tracker);
   
   var preview = new BuildPreview(fileIds);

@@ -163,20 +163,21 @@ function tGenerateTargets(buildId, fileIds)
 
 function doTests() {
   // Dev & testing file Ids
-  var testFileIds = getFileIds("1Ot_w-t0raqORz3P0RWHZzutR8j1JqdELeOIctXKGYZY", 
+  var newFileIds = getFileIds("1Ot_w-t0raqORz3P0RWHZzutR8j1JqdELeOIctXKGYZY", 
                                "1g5VBsASR6b9KgUSwB-r9OW64AGrAU1L9ga_3j46_Nos", 
                                "1XL1pSr63mjCVO6JJpOBowbiDlC0CCIHLrf7yKI__bew");
 
-  var config = getConfig(testFileIds.tracker);
+  var config = getConfig(newFileIds.tracker);
   
-  //ASSERT_TRUE(tBuildPreview(config, testFileIds), "tBuildPreview failed");
-  //ASSERT_TRUE(tBuildTable(config, testFileIds), "tBuildTable failed");
-  //ASSERT_TRUE(tLogHistory(config, testFileIds), "tLogHistory failed");
-  //translateBuildHistory(config, testFileIds, 10)
-  //tGetPrevBuild(config, testFileIds);
-  //tBuildHistory(config, testFileIds);
-  //generateTargets(1, testFileIds);
-  //tGenerateTargets(1, testFileIds);
-  generateMondayTargets(testFileIds);
-  //generateThursdayTargets(testFileIds);
+  //ASSERT_TRUE(tBuildPreview(config, newFileIds), "tBuildPreview failed");
+  //ASSERT_TRUE(tBuildTable(config, newFileIds), "tBuildTable failed");
+  //ASSERT_TRUE(tLogHistory(config, newFileIds), "tLogHistory failed");
+  //translateBuildHistory(config, newFileIds, 10)
+  //tGetPrevBuild(config, newFileIds);
+  //tBuildHistory(config, newFileIds);
+  //generateTargets(1, newFileIds);
+  //tGenerateTargets(1, newFileIds);
+  //generateMondayTargets(newFileIds);
+  //generateThursdayTargets(newFileIds);
+  mondayBuildTrigger(newFileIds);
 }
