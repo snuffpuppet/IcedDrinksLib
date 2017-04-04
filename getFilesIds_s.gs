@@ -16,6 +16,6 @@ function getFileIds(trackerId, mondayId, thursdayId, optLogId)
   return {tracker: trackerId,
           mondayBuild: mondayId,
           thursdayBuild: thursdayId,
-          log: typeof optLogId !== "string" ? optLogId : null};
+          log: typeof optLogId === "string" ? optLogId : null};
 }
 

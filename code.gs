@@ -1,3 +1,22 @@
+function buildTrigger(buildId, fileIds)
+{
+  ASSERT_TRUE(typeof buildId == "number", "buildTrigger: invalid buildId");
+  ASSERT_TRUE(typeof fileIds !== "undefined", "buildTrigger: undefined fileIds");
+
+  var logBuildId = buildId;
+  var nextBuildId = buildId == 1 ? 2 : 1;
+  
+  var config = getConfig(fileIds.tracker);
+  if (fileIds.log) {
+    Logger = BetterLog.useSpreadsheet(fileIds.log);
+    Logger.log("\n\n----------> build trigger start, buildId:" + buildId + " <----------")
+  }
+  logBuild(logBuildId, fileIds);
+  generateTargets(nextBuildId, fileIds);
+  if (config.pushTargets == "y")
+    pushTargets(nextBuildId, fileIds);
+}
+
 /*
  * Automatic event entry point to log the build, generate new targets, 
  * sync them with the preview table and then push them to the Build Table
@@ -5,14 +24,8 @@
  */
 function mondayBuildTrigger(fileIds)
 {
-  var config = getConfig(fileIds.tracker);
-  if (fileIds.log)
-    Logger = BetterLog.useSpreadsheet(fileIds.log);
-  
-  logMondayBuild(fileIds);
-  generateTargets(2, fileIds);
-  if (config.pushTargets == "y")
-    pushTargets(2, fileIds);
+  ASSERT_TRUE(typeof fileIds !== "undefined", "mondayBuildTrigger: undefined fileIds");
+  buildTrigger(1, fileIds);
 }
 
 /*
@@ -22,15 +35,8 @@ function mondayBuildTrigger(fileIds)
  */
 function thursdayBuildTrigger(fileIds)
 {
-  var config = getConfig(fileIds.tracker);
-  if (fileIds.log)    
-    Logger = BetterLog.useSpreadsheet(fileIds.log);
-  
-  logThursdayBuild(fileIds);
-  generateTargets(1, fileIds);
-  if (config.pushTargets == "y")
-    pushTargets(1, fileIds);
-
+  ASSERT_TRUE(typeof fileIds !== "undefined", "thursdayBuildTrigger: undefined fileIds");
+  buildTrigger(2, fileIds);
 }
 
 /*
@@ -39,6 +45,7 @@ function thursdayBuildTrigger(fileIds)
  */
 function logMondayBuild(fileIds)
 {
+  ASSERT_TRUE(typeof fileIds !== "undefined", "logMondayBuild: undefined fileIds");
   logBuild(1, fileIds);
 }
 
@@ -48,6 +55,7 @@ function logMondayBuild(fileIds)
  */
 function logThursdayBuild(fileIds)
 {
+  ASSERT_TRUE(typeof fileIds !== "undefined", "logThursdayBuild: undefined fileIds");
   logBuild(2, fileIds);
 }
 
@@ -56,6 +64,7 @@ function logThursdayBuild(fileIds)
  * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
 function generateMondayTargets(fileIds) {
+  ASSERT_TRUE(typeof fileIds !== "undefined", "generateMondayTargets: undefined fileIds");
   if (fileIds.log)    
     Logger = BetterLog.useSpreadsheet(fileIds.log);
   generateTargets(1, fileIds);
@@ -66,6 +75,7 @@ function generateMondayTargets(fileIds) {
  * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
 function generateThursdayTargets(fileIds) {
+  ASSERT_TRUE(typeof fileIds !== "undefined", "generateThursdayTargets: undefined fileIds");
   if (fileIds.log) 
     Logger = BetterLog.useSpreadsheet(fileIds.log);
   generateTargets(2, fileIds);
@@ -76,6 +86,7 @@ function generateThursdayTargets(fileIds) {
  * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
 function pushMondayTargets(fileIds) {
+  ASSERT_TRUE(typeof fileIds !== "undefined", "pushMondayTargets: undefined fileIds");
   if (fileIds.log)     
     Logger = BetterLog.useSpreadsheet(fileIds.log);
   pushTargets(1, fileIds);
@@ -86,6 +97,7 @@ function pushMondayTargets(fileIds) {
  * @param {Object} fileIds - an object containing the Spreadsheet file Ids being worked on
  */
 function pushThursdayTargets(fileIds) {
+  ASSERT_TRUE(typeof fileIds !== "undefined", "pushThursdayTargets: undefined fileIds");
   if (fileIds.log)     
     Logger = BetterLog.useSpreadsheet(fileIds.log);
   pushTargets(2, fileIds);
@@ -98,8 +110,8 @@ function pushThursdayTargets(fileIds) {
  */
 function logBuild(buildId, fileIds)
 {
-  ASSERT_TRUE(typeof buildId == "number");
-  ASSERT_TRUE(typeof fileIds !== "undefined");
+  ASSERT_TRUE(typeof buildId == "number", "logBuild: invalid buildId");
+  ASSERT_TRUE(typeof fileIds !== "undefined", "logBuild: undefined fileIds");
   
   var trackerId = fileIds.tracker;
   var buildSheetId = buildId==1 ? fileIds.mondayBuild : fileIds.thursdayBuild;
@@ -159,7 +171,7 @@ function logBuild(buildId, fileIds)
 function generateTargets(buildId, fileIds) 
 {
   ASSERT_TRUE(typeof buildId == "number" && (buildId == 1 || buildId == 2), "generateTargets: buildId must be either 1 or 2");
-  ASSERT_TRUE(typeof fileIds !== "undefined");
+  ASSERT_TRUE(typeof fileIds !== "undefined", "generateTargets: undefined fileIds");
   
   var config = getConfig(fileIds.tracker);
     
@@ -255,8 +267,8 @@ function getAverageSold(siteNames, drinkTypes, soldHistory, INCLUDE_DEAD)
  * @param {Object} fileIds - Spreadsheet files Ids being used
  */
 function pushTargets(buildId, fileIds) {
-  ASSERT_TRUE(typeof buildId == "number");
-  ASSERT_TRUE(typeof fileIds !== "undefined");
+  ASSERT_TRUE(typeof buildId == "number" && (buildId == 1 || buildId == 2), "pushTargets: buildId must be either 1 or 2");
+  ASSERT_TRUE(typeof fileIds !== "undefined", "pushTargets: undefined fileIds");
 
   var config = getConfig(fileIds.tracker);
   
