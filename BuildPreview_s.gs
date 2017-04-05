@@ -8,10 +8,9 @@ function BuildPreview(fileIds) {
   this.drinksTrackerId = fileIds.tracker;
   this.previewSheet = null;
   
-  this.MondayOffset = 0;
-  this.ThursdayOffset = 5;
-  //this.BunkerOffset = 0;
-  //this.JMHOffset = 2;
+  this.MondayOffset = 0;    // Monday columns start at 0 of range
+  this.ThursdayOffset = 2;  // Thursday columns offset;
+  this.siteOffsetMultiplier = 5;
   this.PrevOffset = 0;
   this.NewOffset = 1;
   
@@ -41,9 +40,9 @@ BuildPreview.prototype = {
       var drinkData = drinkRange.getValues()[0];
       for (var si=0; si<siteNames.length; si++) {
         var site=targets.site[si];
-        var siteOffset=site.siteInfo.previewTableOffset;
-        var buildIdOffset=buildId==1?this.MondayOffset:this.ThursdayOffset;
-        var offset=siteOffset + buildIdOffset + ageOffset;
+        var siteOffset=si * this.siteOffsetMultiplier;
+        var dayOffset=buildId==1?this.MondayOffset:this.ThursdayOffset;
+        var offset=siteOffset + dayOffset + ageOffset;
         site.drinks.count[dt] = parseInt(drinkData[offset]);
         Logger.log("  " + dt + ": " + siteNames[si] + " found (" + drinkData[offset] + ") at offset " + offset);
       }
@@ -75,8 +74,6 @@ BuildPreview.prototype = {
   setTargets: function(ageOffset, buildId, drinksSummary) {
     var si; // Site Index
     var dti; // Drink Type Index
-    Logger.log("==> BuildPreview.setNewTargets for " + drinksSummary.site[0].drinks.drinkTypes.length + " drinks accross " + drinksSummary.numSites + " sites ");
-    Logger.log(drinksSummary.toString());
     for (si = 0; si < drinksSummary.numSites; si++) {
       var siteTargets = drinksSummary.site[si].drinks;
       for (dti=0; dti < siteTargets.drinkTypes.length; dti++) {
@@ -85,8 +82,9 @@ BuildPreview.prototype = {
         ASSERT_TRUE(drinkRange!=null, "No Range name '" + drink + "' found in spreadsheet")
       
         var drinkRow = drinkRange.getValues();
-        var offset = (buildId == 1 ? this.MondayOffset : this.ThursdayOffset) +
-          drinksSummary.site[si].siteInfo.previewTableOffset + ageOffset;
+        var dayOffset = buildId == 1 ? this.MondayOffset : this.ThursdayOffset;
+        var siteOffset = si * this.siteOffsetMultiplier;
+        var offset = dayOffset + siteOffset + ageOffset;
         
         drinkRow[0][offset] = Math.ceil(siteTargets.count[drink]); // round values up
         drinkRange.setValues(drinkRow);
@@ -100,6 +98,8 @@ BuildPreview.prototype = {
    * @param {Object} drinksSummary - a DrinksSummary object containing the iced drink counts accross all the sites we are working with
    */
   setNewTargets: function(buildId, drinksSummary) {
+    Logger.log("==> BuildPreview.setNewTargets for " + drinksSummary.site[0].drinks.drinkTypes.length + " drinks accross " + drinksSummary.numSites + " sites ");
+    Logger.log(drinksSummary.toString());
     this.setTargets(this.NewOffset, buildId, drinksSummary);
   },
 
@@ -109,6 +109,8 @@ BuildPreview.prototype = {
    * @param {Object} drinksSummary - a DrinksSummary object containing the iced drink counts accross all the sites we are working with
    */
   setPrevTargets: function(buildId, drinksSummary) {
+    Logger.log("==> BuildPreview.setPrevTargets for " + drinksSummary.site[0].drinks.drinkTypes.length + " drinks accross " + drinksSummary.numSites + " sites ");
+    Logger.log(drinksSummary.toString());
     this.setTargets(this.PrevOffset, buildId, drinksSummary);
   }
 }

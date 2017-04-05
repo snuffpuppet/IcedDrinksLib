@@ -16,7 +16,7 @@ function SiteBuild(date, site, buildId, buildTo, inFridge, dead, sold) {
   this.buildId = buildId;
   this.buildTo = buildTo;
   this.inFridge = inFridge;
-  this.making = buildTo.total - inFridge.total;
+  this.making = inFridge.total > buildTo.total ? 0 : buildTo.total - inFridge.total;
   this.dead = dead;
   this.sold = null;
   if (typeof sold != "undefined") {

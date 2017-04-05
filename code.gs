@@ -180,6 +180,7 @@ function generateTargets(buildId, fileIds)
   var history = new BuildHistory(fileIds);  // Grab the previous 'n' build histories of the other build
   var soldHistory = history.getBuildSummaries(config.sites, config.drinkTypes, workingBuildId, config.nWeeks);
   var lastSnapshot = soldHistory[0]; // the last snapshot is always the most recent snapshot of the other build
+  var prevSameBuild = history.getBuildSummary(config.sites, config.drinkTypes, buildId);
   
   Logger.log("==== generateTargets(buildId: " + buildId + ") ====");
   Logger.log("=> History over " + config.nWeeks + " weeks");
@@ -206,18 +207,33 @@ function generateTargets(buildId, fileIds)
   for (var siteNum = 0; siteNum < targets.numSites; siteNum++) {
     //targets.site[siteNum].drinks.applyCoefficient(1/(soldHistory.length+1));
     targets.site[siteNum].drinks.applyCoefficient(ADJ_FACTOR, true);
-    if (ZERO_BUMP_UP>0) {
-      var inFridgeNow = lastSnapshot.site[siteNum].inFridge;
-      for (var dti=0; dti<inFridgeNow.drinkTypes.length; dti++) {
-        var drink = inFridgeNow.drinkTypes[dti];
-        if (inFridgeNow.count[drink] == 0) {
-          Logger.log("  " + targets.siteNames[siteNum] + " has 0 [" + drink + "]s in fridge, BUMPING UP");
-          if (targets.site[siteNum].drinks.count.hasOwnProperty(drink))
-            targets.site[siteNum].drinks.add(drink, ZERO_BUMP_UP);
-          else
-            Loggser.log("  Cancelling BUMP UP for " + targets.siteNames[siteNum] + ": " + drink + " as is not in configured drinkTypes");
+    //if (ZERO_BUMP_UP>0) {
+    var inFridgeNow = lastSnapshot.site[siteNum].inFridge;
+    var prevSameBuildTo = prevSameBuild.site[siteNum].buildTo;
+
+    for (var dti=0; dti<inFridgeNow.drinkTypes.length; dti++) {
+      var drink = inFridgeNow.drinkTypes[dti];
+      var isNewDrink = false;
+      // check if this is a new drink and if the prevous builds would not have sold values
+      for (var pbi=1; pbi < soldHistory.length; pbi++) {
+        if (soldHistory[pbi].site[siteNum].buildTo.count[drink] == 0) {
+          isNewDrink = true;
+          break;
         }
       }
+      if (isNewDrink) { 
+        // if this is a new drink for this site just use the current buildTo
+        targets.site[siteNum].drinks.set(drink, prevSameBuildTo.count[drink]);
+        Logger.log("  Found new drink '" + drink + "' for " + config.sites[siteNum] + " - just using current buildTo:" + prevSameBuildTo.count[drink]);
+      }
+      else if (inFridgeNow.count[drink] == 0) {
+        Logger.log("  " + targets.siteNames[siteNum] + " has 0 [" + drink + "]s in fridge, BUMPING UP");
+        if (targets.site[siteNum].drinks.count.hasOwnProperty(drink))
+          targets.site[siteNum].drinks.add(drink, ZERO_BUMP_UP);
+        else
+          Loggser.log("  Cancelling BUMP UP for " + targets.siteNames[siteNum] + ": " + drink + " as is not in configured drinkTypes");
+      }
+      //}
     }
   }
   

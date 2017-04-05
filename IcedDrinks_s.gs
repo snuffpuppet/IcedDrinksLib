@@ -22,12 +22,24 @@ IcedDrinks.prototype = {
   /* 
    * add 'num' to the drinks count for 'drink'
    * @param {string} drink - the drink that we wish to effect
-   * @param {int{ num - the amount by which we should increase the count
+   * @param {int} num - the amount by which we should increase the count
    */
   add: function(drink, num)
   {
     this.count[drink] += num;
     this.total += num;
+  },
+
+  /* 
+   * set 'num' to be the drinks count for 'drink'
+   * @param {string} drink - the drink that we wish to effect
+   * @param {int} num - the amount 
+   */
+  set: function(drink, num)
+  {
+    this.total -= this.count[drink] - num;
+    this.count[drink] = num;
+
   },
 
   /* 

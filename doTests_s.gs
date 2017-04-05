@@ -69,40 +69,10 @@ function tBuildTable(config, fileIds)
 }
 
 
-function tLogHistory(config, fileIds)
+function tLogHistory(config, buildId, fileIds)
 {
-  var sites = new Sites(config.sites);
-  var buildTable = new BuildTable(1, fileIds); // testing against the thursday build for funs
-  //var buildTable = new BuildTable(1);
-  var summary = buildTable.getBuildSummary(sites, config.drinkTypes);
-  
-  // Have the current build summary, now need to calculate the 'sold' values
-  var history = new BuildHistory(fileIds);
-  var totals = new BuildHistoryTotals(fileIds);
-  
-  var prevSummary = history.getPrevBuildSummary(config.sites, config.drinkTypes, summary.buildId == 1 ? 2 : 1);
-  
-  var sold;
-  var prevBuild;
-  var curBuild;
-  
-  for (var si=0; si< prevSummary.site.length; si++) {
-    prevBuild = prevSummary.site[si];
-    curBuild = summary.site[si];
-    sold = new IcedDrinks(config.drinkTypes);
-    if (curBuild != null) {
-      for (var dti=0; dti < sold.drinkTypes.length; dti++) {
-        var drink = sold.drinkTypes[dti];
-        var soldCount = prevBuild.buildTo.count[drink] - curBuild.inFridge.count[drink];
-        sold.add(drink, soldCount > 0 ? soldCount : 0);
-      }
-    }
-    summary.site[si].sold = sold;
-  }
-    
-  history.appendBuildSummary(summary);
-  totals.appendBuildTotals(summary);
-  
+  logBuild(buildId, fileIds);
+
   SpreadsheetApp.flush();
   return true;
 }
@@ -117,7 +87,7 @@ function tGetPrevBuild(config, fileIds)
 function tBuildHistory(config, fileIds)
 {
   var history = new BuildHistory(fileIds);  // Grab the previous 'n' build histories of the other build
-  var targetBuildId = 2;
+  var targetBuildId = 1;
   var summaries = history.getBuildSummaries(config.sites, config.drinkTypes, targetBuildId, config.nWeeks);
 
   Logger.log("==== History for BuildId " + targetBuildId + " over " + config.nWeeks + " weeks ====");
@@ -135,7 +105,7 @@ function tBuildHistory(config, fileIds)
     }
   }
        
-  Logger.log(summaries);
+  //Logger.log(summaries);
 }
 
 function tGenerateTargets(buildId, fileIds)
@@ -171,7 +141,7 @@ function doTests() {
   
   //ASSERT_TRUE(tBuildPreview(config, newFileIds), "tBuildPreview failed");
   //ASSERT_TRUE(tBuildTable(config, newFileIds), "tBuildTable failed");
-  //ASSERT_TRUE(tLogHistory(config, newFileIds), "tLogHistory failed");
+  //ASSERT_TRUE(tLogHistory(config, 2, newFileIds), "tLogHistory failed");
   //translateBuildHistory(config, newFileIds, 10)
   //tGetPrevBuild(config, newFileIds);
   //tBuildHistory(config, newFileIds);
@@ -179,5 +149,6 @@ function doTests() {
   //tGenerateTargets(1, newFileIds);
   //generateMondayTargets(newFileIds);
   //generateThursdayTargets(newFileIds);
-  mondayBuildTrigger(newFileIds);
+  //mondayBuildTrigger(newFileIds);
+  //thursdayBuildTrigger(newFileIds);
 }

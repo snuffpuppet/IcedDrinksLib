@@ -14,8 +14,8 @@ function Site(siteNames, siteId) {
   var previewStart = 0;
   var buildStart = 0;
   
-  var previewMultiple = 2;
-  var buildMultiple = 3;
+  var previewMultiple = 5;
+  var buildMultiple = 4;
 
   this.siteNames = siteNames;
   this.id = siteId;
