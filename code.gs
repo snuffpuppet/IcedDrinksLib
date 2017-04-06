@@ -140,7 +140,9 @@ function logBuild(buildId, fileIds)
       // Sold = previous buildTo - current inFridge - current dead (expired) drinks
       for (var dti=0; dti < sold.drinkTypes.length; dti++) {
         var drink = sold.drinkTypes[dti];
-        var soldCount = prevBuild.buildTo.count[drink] - curBuild.inFridge.count[drink] - curBuild.dead.count[drink];
+        // Take highest of the buildTo of that day or what was already in fridge
+        var numDrinksMade = prevBuild.buildTo.count[drink] > prevBuild.inFridge.count[drink] ? prevBuild.buildTo.count[drink] : prevBuild.inFridge.count[drink];
+        var soldCount = numDrinksMade - curBuild.inFridge.count[drink] - curBuild.dead.count[drink];
         sold.add(drink, soldCount > 0 ? soldCount : 0);
       }
     }
@@ -174,7 +176,8 @@ function generateTargets(buildId, fileIds)
   ASSERT_TRUE(typeof fileIds !== "undefined", "generateTargets: undefined fileIds");
   
   var config = getConfig(fileIds.tracker);
-    
+  
+  var BUILD_TO_OVERRIDE = config.buildToOverride == 'y' ? true : false;
   var workingBuildId = buildId == 1 ? 2 : 1; // Sold data for this buildId are on the opposite buildId's rows
   
   var history = new BuildHistory(fileIds);  // Grab the previous 'n' build histories of the other build
@@ -221,7 +224,7 @@ function generateTargets(buildId, fileIds)
           break;
         }
       }
-      if (isNewDrink) { 
+      if (isNewDrink || BUILD_TO_OVERRIDE) { 
         // if this is a new drink for this site just use the current buildTo
         targets.site[siteNum].drinks.set(drink, prevSameBuildTo.count[drink]);
         Logger.log("  Found new drink '" + drink + "' for " + config.sites[siteNum] + " - just using current buildTo:" + prevSameBuildTo.count[drink]);
