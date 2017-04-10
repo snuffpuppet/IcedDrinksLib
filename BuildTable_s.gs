@@ -59,10 +59,19 @@ BuildTable.prototype = {
         var drink = buildTo.drinkTypes[j];
         var range = this.buildSheet.getRangeByName(this.sheetNamePrefix + drink);
         ASSERT_TRUE(range!=null, "Range '" + this.sheetNamePrefix + drink + "' not found in buildId " + this.buildId + " with Id '" + this.sheetId + "'");
-        
-        buildTo.add(drink, parseInt(range.getValues()[0][site.buildTableOffset + this.buildToOffset]));
-        inFridge.add(drink, parseInt(range.getValues()[0][site.buildTableOffset + this.inFridgeOffset]));
-        dead.add(drink, parseInt(range.getValues()[0][site.buildTableOffset + this.deadOffset]));
+
+        var getNumeric = function(name, val) {
+          if (isNaN(val)) {
+            Logger.log("==ERROR== Found non numeric value '" + val + "' for " + name + "(" + siteName + "," + drink + ") - using 0");
+            return 0;
+          }
+          else
+            return parseInt(val);
+        }
+          
+        buildTo.add(drink, getNumeric("buildTo", range.getValues()[0][site.buildTableOffset + this.buildToOffset]));
+        inFridge.add(drink, getNumeric("inFridge", range.getValues()[0][site.buildTableOffset + this.inFridgeOffset]));
+        dead.add(drink, getNumeric("dead", range.getValues()[0][site.buildTableOffset + this.deadOffset]));
       }
       var build = new SiteBuild(today, site, this.buildId, buildTo, inFridge, dead);
       summary.addBuild(build);

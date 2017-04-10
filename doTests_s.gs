@@ -1,5 +1,3 @@
-
-
 function tDrinksExpected(drinks, expected) {
   if (drinks == null)
     return false;
@@ -150,5 +148,5 @@ function doTests() {
   //generateMondayTargets(newFileIds);
   //generateThursdayTargets(newFileIds);
   //mondayBuildTrigger(newFileIds);
-  thursdayBuildTrigger(newFileIds);
+  //thursdayBuildTrigger(newFileIds);
 }
