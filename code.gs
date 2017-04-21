@@ -78,6 +78,7 @@ function generateThursdayTargets(fileIds) {
   ASSERT_TRUE(typeof fileIds !== "undefined", "generateThursdayTargets: undefined fileIds");
   if (fileIds.log) 
     Logger = BetterLog.useSpreadsheet(fileIds.log);
+  //generateTargets(2, fileIds);
   generateTargets(2, fileIds);
 }
 
@@ -113,6 +114,7 @@ function logBuild(buildId, fileIds)
   ASSERT_TRUE(typeof buildId == "number", "logBuild: invalid buildId");
   ASSERT_TRUE(typeof fileIds !== "undefined", "logBuild: undefined fileIds");
   
+  var config = getConfig(fileIds.tracker);
   var trackerId = fileIds.tracker;
   var buildSheetId = buildId==1 ? fileIds.mondayBuild : fileIds.thursdayBuild;
   var config = getConfig(trackerId);
@@ -140,10 +142,16 @@ function logBuild(buildId, fileIds)
       // Sold = previous buildTo - current inFridge - current dead (expired) drinks
       for (var dti=0; dti < sold.drinkTypes.length; dti++) {
         var drink = sold.drinkTypes[dti];
-        // Take highest of the buildTo of that day or what was already in fridge
-        var numDrinksMade = prevBuild.buildTo.count[drink] > prevBuild.inFridge.count[drink] ? prevBuild.buildTo.count[drink] : prevBuild.inFridge.count[drink];
-        var soldCount = numDrinksMade - curBuild.inFridge.count[drink] - curBuild.dead.count[drink];
-        sold.add(drink, soldCount > 0 ? soldCount : 0);
+        // calculating sold for all currently configured drinks, check if there is a new one
+        if (prevBuild.buildTo.count[drink]) {
+          // Take highest of the buildTo of that day or what was already in fridge
+          var numDrinksLastBuild = prevBuild.buildTo.count[drink] > prevBuild.inFridge.count[drink] ? prevBuild.buildTo.count[drink] : prevBuild.inFridge.count[drink];
+          var soldCount = numDrinksLastBuild - curBuild.inFridge.count[drink] - curBuild.dead.count[drink];
+          sold.add(drink, soldCount > 0 ? soldCount : 0);
+        }
+        else { // new drink, generate a sold value so that new build stays stationary
+          sold.add(drink, curBuild.buildTo[drink].count / config.buildFactor(buildId==1?2:1));
+        }
       }
     }
     curBuild.sold = sold;
@@ -171,6 +179,79 @@ function logBuild(buildId, fileIds)
  * @param {Object} fileIds - Spreadsheet filesIds being used
  */
 function generateTargets(buildId, fileIds) 
+{
+  ASSERT_TRUE(typeof buildId == "number" && (buildId == 1 || buildId == 2), "generateTargets: buildId must be either 1 or 2");
+  ASSERT_TRUE(typeof fileIds !== "undefined", "generateTargets: undefined fileIds");
+  
+  var config = getConfig(fileIds.tracker);
+  
+  var BUILD_TO_OVERRIDE = config.buildToOverride == 'y' ? true : false;
+  var workingBuildId = buildId == 1 ? 2 : 1; // Sold data for this buildId are on the opposite buildId's rows
+  
+  var history = new BuildHistory(fileIds);  // Grab the previous 'n' build histories of the other build
+  var soldHistory = history.getBuildSummarySequence(config.sites, config.drinkTypes, workingBuildId, config.nWeeks);
+  
+  Logger.log("==== generateTargets(buildId: " + buildId + ") ====");
+  Logger.log("=> History over " + config.nWeeks + " weeks");
+  for (var i=0; i<soldHistory.summaries.length; i++) {
+    Logger.log("=> history[" + i + "]:");
+    Logger.log(soldHistory.summaries[i].toString());
+  }
+  
+  var soldDrinksAggregator = function(config, buildId, siteNum, drink, numWeeks, soldAmounts, inFridgeNow) {
+    var averageSold;
+    var newBuildNum;
+    Logger.log("  => soldDrinksAggregator(bId:" + buildId + ", site:" + siteNum + ", " + drink + ", [" + soldAmounts + "], ifn:" + inFridgeNow + ")");
+    if (soldAmounts.length == 0 || (config.newDrinkBehavior == "buildTableOverride" && numWeeks != soldAmounts.length)) {
+      Logger.log("  Found new drink '" + drink + "' for " + config.sites[siteNum] + " - not generating new target (using null)");
+      newBuildNum = null;
+    }
+    else {
+      if (numWeeks != soldAmounts.length)
+        Logger.log("  Found new drink '" + drink + "' for " + config.sites[siteNum] + " - using limited sold averaging (" + soldAmounts.length + " weeks rather than " + numWeeks + ")");
+      averageSold = soldAmounts.reduce(function(a, b) { return a + b; }, 0) / soldAmounts.length;
+      newBuildNum = Math.round(averageSold * config.buildFactor(buildId));
+      if (config.zeroBumpUp && inFridgeNow == 0) {
+        Logger.log("  - 0 in fridge, BUMPING UP by %s", config.zeroBumpUp);
+        newBuildNum += parseInt(config.zeroBumpUp);
+      }
+    }
+    return newBuildNum;
+  }
+  
+  
+  // get averaged sold amounts from build history
+  var targets = soldHistory.generateSoldSummary(config, soldDrinksAggregator);
+  
+  Logger.log("=== New Targets ===");
+  Logger.log(targets.toString());
+  
+  // Now we have new build targets for all the sites, push them to the build preview
+  var preview = new BuildPreview(fileIds);
+  preview.setNewTargets(buildId, targets);
+  
+  // grab the last build done for this same buildId to update the prev fields
+  var prevBuild = history.getBuildSummary(config.sites, config.drinkTypes, buildId);
+  preview.setPrevTargets(buildId, prevBuild.getBuildToSummary(config.drinkTypes));  
+}
+
+/*
+ * Old GenerateTargets - deprecated
+ * Work out a new set of build targets (buildTo) for the given buildId
+ *  - Populate a new BuildSummary object with the target buildTo numbers
+ *  - Sync new target values to Preview Sheet
+ *
+ * Basic algorithm averages number sold from previous builds, applies a scaling factor
+ * and then optionally bumps up the individual drink amounts if they have run out
+ *
+ * Other alogrithms have been available in the past but are currently deprecated:
+ *  - percentPrevBuild: Next build is a precentage of the diff between previous build
+ *                      and what's in the fridge
+ * generatetargets
+ * @param {int} buildId - the build Id (buid sheet) of the build we are logging
+ * @param {Object} fileIds - Spreadsheet filesIds being used
+ */
+function _deprecatedGenerateTargets(buildId, fileIds) 
 {
   ASSERT_TRUE(typeof buildId == "number" && (buildId == 1 || buildId == 2), "generateTargets: buildId must be either 1 or 2");
   ASSERT_TRUE(typeof fileIds !== "undefined", "generateTargets: undefined fileIds");
@@ -225,7 +306,7 @@ function generateTargets(buildId, fileIds)
         }
       }
       if (isNewDrink || BUILD_TO_OVERRIDE) { 
-        // if this is a new drink for this site just use the current buildTo
+        // if this is a new drink for this site, use the current buildTo
         targets.site[siteNum].drinks.set(drink, prevSameBuildTo.count[drink]);
         Logger.log("  Found new drink '" + drink + "' for " + config.sites[siteNum] + " - just using current buildTo:" + prevSameBuildTo.count[drink]);
       }
@@ -258,7 +339,7 @@ function generateTargets(buildId, fileIds)
  * @param {boolean} INCLUDE_DEAD - weather or not to include the wastage drinks in the sold count for averaging
  * @returns {Object} - a DrinksSummary object with the averaged values accross the configured sites
  */
-function getAverageSold(siteNames, drinkTypes, soldHistory, INCLUDE_DEAD)
+function _deprecatedGetAverageSold(siteNames, drinkTypes, soldHistory, INCLUDE_DEAD)
 {
   var avgSold = new DrinksSummary(new Date(), siteNames, drinkTypes);
   // aggregate the sold numbers accross all the configured weeks

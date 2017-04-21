@@ -146,7 +146,7 @@ function doTests() {
   //generateTargets(1, newFileIds);
   //tGenerateTargets(1, newFileIds);
   //generateMondayTargets(newFileIds);
-  //generateThursdayTargets(newFileIds);
+  generateThursdayTargets(newFileIds);
   //mondayBuildTrigger(newFileIds);
   //thursdayBuildTrigger(newFileIds);
 }

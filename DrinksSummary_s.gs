@@ -38,6 +38,7 @@ DrinksSummary.prototype = {
     ASSERT_TRUE(siteId >= 0 && siteId < this.numSites, "DrinksSummary.addDrinks: invalid siteId:" + siteId);
     this.site[siteId].drinks = drinks;
   },
+  
   /*
    * Stringify the DrinksSummary object for printing
    * @returns {string}

@@ -26,6 +26,18 @@ BuildHistory.prototype = {
   },
 
   /*
+   * Get a sequence of build summaries from a specific build day (buildId)
+   * @param {string[]} siteNames - the list of configured site names we are working with
+   * @param {string[]} drinkTypes - the list of configured drink types we are working with
+   * @param {int} buildId - the build Id of this summary (indicates the build sheet)
+   * @returns {Object} - a BuildSummaryEvents object holding a history sequence
+   */
+  getBuildSummarySequence: function (siteNames, drinkTypes, buildId, numSummaries) {
+    return new BuildSummarySequence(siteNames, drinkTypes, buildId, this.getBuildSummaries(siteNames, drinkTypes, buildId, numSummaries));
+  buildId, siteNames, drinkTypes, buildSummaries
+  },
+  
+  /*
    * Get latest numSummaries build summaries with specified buildId from the Build History
    * @param {string[]} siteNames - the list of configured site names we are working with
    * @param {string[]} drinkTypes - the list of configured drink types we are working with

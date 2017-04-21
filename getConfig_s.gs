@@ -12,6 +12,7 @@ function getConfig(sheetId) {
   var configData = configRange.getValues();
   var config = {};
   
+  // add in the literals
   for (var i=0; i<configRange.getNumRows(); i++) {
     var parameter = configData[i][0];
     var pValue = configData[i][1];
@@ -38,6 +39,11 @@ function getConfig(sheetId) {
       }
       config[parameter] = value;
     }
+  }
+  
+  // add in the extended functions
+  config.buildFactor = function(buildId) { 
+    return buildId == 1 ? parseFloat(config.monFactor) : parseFloat(config.thuFactor); 
   }
   return config;
 }
