@@ -198,11 +198,11 @@ function generateTargets(buildId, fileIds)
     Logger.log(soldHistory.summaries[i].toString());
   }
   
-  var soldDrinksAggregator = function(config, targetBuildId, siteNum, drink, numWeeks, soldAmounts, inFridgeNow) {
+  var soldDrinksAggregator = function(config, buildId, siteNum, drink, numWeeks, soldAmounts, inFridgeNow) {
     var averageSold;
     var newBuildNum;
-    var buildFactor = config.buildFactor(targetBuildId); // generating targets for next buid, not this one
-    var logMessage = "  => soldDrinksAggregator(tBid:" + targetBuildId + ", site:" + siteNum + ", " + drink + ", [" + soldAmounts + "], ifn:" + inFridgeNow + ")";
+    var buildFactor = config.buildFactor(buildId===1?0:1); // generating targets for next buid, not this one
+    var logMessage = "  => soldDrinksAggregator(bId:" + buildId + ", site:" + siteNum + ", " + drink + ", [" + soldAmounts + "], ifn:" + inFridgeNow + ")";
     
     if (soldAmounts.length == 0 || (config.newDrinkBehavior == "buildTableOverride" && numWeeks != soldAmounts.length)) {
       Logger.log("  SoldDrinksAggregator: Found new drink '" + drink + "' for " + config.sites[siteNum] + " - not generating new target (using null)");

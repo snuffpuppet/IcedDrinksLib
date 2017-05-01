@@ -42,7 +42,7 @@ BuildSummarySequence.prototype = {
         for (si=0; si < this.summaries.length; si++) {
           soldDrinks = this.summaries[si].site[siteNum].sold;
           deadDrinks = this.summaries[si].site[siteNum].dead;
-          if (soldDrinks && soldDrinks.count[drink]) {
+          if (soldDrinks && soldDrinks.count[drink] != null) {
             soldAmounts[soldAmounts.length] = soldDrinks.count[drink];
             if (config.includeDeadInSold == "y")
               soldAmounts[soldAmounts.length-1] += deadDrinks.count[drink];
@@ -52,7 +52,7 @@ BuildSummarySequence.prototype = {
         }
         // soldAmounts contains all the sold values for this drink (and may even be empty for newly added drinks)
         inFridgeNow = this.summaries[0].site[siteNum].inFridge.count[drink];
-        soldSummary.site[siteNum].drinks.count[drink] = aggregator(config, this.buildId===1?0:1, siteNum, drink, this.summaries.length, soldAmounts, inFridgeNow);
+        soldSummary.site[siteNum].drinks.count[drink] = aggregator(config, this.buildId, siteNum, drink, this.summaries.length, soldAmounts, inFridgeNow);
       }
     }
     
