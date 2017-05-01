@@ -28,6 +28,11 @@ BuildSummarySequence.prototype = {
     var inFridgeNow;
     var soldSummary = new DrinksSummary(new Date(), this.siteNames, this.drinkTypes);
     
+    //
+    // Create an array of sold values from the each of the summaries for each drinkType over each of the sites.
+    // Loop over each of the sites and each of its drinks and then combine all the sold values for that site,drinkType combo
+    // pass that to the given aggragtor function to calulate a new target value for that drink at that site
+    //
     Logger.log("generating " + this.summaries.length + " week sold summary for buildId " + this.buildId + ", [" + this.siteNames + "], [" + this.drinkTypes + "]");
     for (siteNum = 0; siteNum < this.siteNames.length; siteNum++) {
       site = this.siteNames[siteNum];
@@ -47,7 +52,7 @@ BuildSummarySequence.prototype = {
         }
         // soldAmounts contains all the sold values for this drink (and may even be empty for newly added drinks)
         inFridgeNow = this.summaries[0].site[siteNum].inFridge.count[drink];
-        soldSummary.site[siteNum].drinks.count[drink] = aggregator(config, this.buildId, siteNum, drink, this.summaries.length, soldAmounts, inFridgeNow);
+        soldSummary.site[siteNum].drinks.count[drink] = aggregator(config, this.buildId===1?0:1, siteNum, drink, this.summaries.length, soldAmounts, inFridgeNow);
       }
     }
     

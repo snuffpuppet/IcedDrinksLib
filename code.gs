@@ -198,24 +198,29 @@ function generateTargets(buildId, fileIds)
     Logger.log(soldHistory.summaries[i].toString());
   }
   
-  var soldDrinksAggregator = function(config, buildId, siteNum, drink, numWeeks, soldAmounts, inFridgeNow) {
+  var soldDrinksAggregator = function(config, targetBuildId, siteNum, drink, numWeeks, soldAmounts, inFridgeNow) {
     var averageSold;
     var newBuildNum;
-    Logger.log("  => soldDrinksAggregator(bId:" + buildId + ", site:" + siteNum + ", " + drink + ", [" + soldAmounts + "], ifn:" + inFridgeNow + ")");
+    var buildFactor = config.buildFactor(targetBuildId); // generating targets for next buid, not this one
+    var logMessage = "  => soldDrinksAggregator(tBid:" + targetBuildId + ", site:" + siteNum + ", " + drink + ", [" + soldAmounts + "], ifn:" + inFridgeNow + ")";
+    
     if (soldAmounts.length == 0 || (config.newDrinkBehavior == "buildTableOverride" && numWeeks != soldAmounts.length)) {
-      Logger.log("  Found new drink '" + drink + "' for " + config.sites[siteNum] + " - not generating new target (using null)");
+      Logger.log("  SoldDrinksAggregator: Found new drink '" + drink + "' for " + config.sites[siteNum] + " - not generating new target (using null)");
       newBuildNum = null;
     }
     else {
       if (numWeeks != soldAmounts.length)
-        Logger.log("  Found new drink '" + drink + "' for " + config.sites[siteNum] + " - using limited sold averaging (" + soldAmounts.length + " weeks rather than " + numWeeks + ")");
+        Logger.log("  SoldDrinksAggregator: Found new drink '" + drink + "' for " + config.sites[siteNum] + " - using limited sold averaging (" + soldAmounts.length + " weeks rather than " + numWeeks + ")");
       averageSold = soldAmounts.reduce(function(a, b) { return a + b; }, 0) / soldAmounts.length;
-      newBuildNum = Math.round(averageSold * config.buildFactor(buildId));
+      newBuildNum = Math.round(averageSold * buildFactor);
+      logMessage += " => " + (Math.round(averageSold*100)/100) + " * " + buildFactor + " = " + newBuildNum;
+      
       if (config.zeroBumpUp && inFridgeNow == 0) {
-        Logger.log("  - 0 in fridge, BUMPING UP by %s", config.zeroBumpUp);
         newBuildNum += parseInt(config.zeroBumpUp);
+        logMessage += " + " + config.zeroBumpUp + " BUMP UP = " + newBuildNum;
       }
     }
+    Logger.log(logMessage);
     return newBuildNum;
   }
   
