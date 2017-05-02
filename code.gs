@@ -201,7 +201,7 @@ function generateTargets(buildId, fileIds)
   var soldDrinksAggregator = function(config, buildId, siteNum, drink, numWeeks, soldAmounts, inFridgeNow) {
     var averageSold;
     var newBuildNum;
-    var buildFactor = config.buildFactor(buildId===1?0:1); // generating targets for next buid, not this one
+    var buildFactor = config.buildFactor(buildId===1?2:1); // generating targets for next buid, not this one
     var logMessage = "  => soldDrinksAggregator(bId:" + buildId + ", site:" + siteNum + ", " + drink + ", [" + soldAmounts + "], ifn:" + inFridgeNow + ")";
     
     if (soldAmounts.length == 0 || (config.newDrinkBehavior == "buildTableOverride" && numWeeks != soldAmounts.length)) {

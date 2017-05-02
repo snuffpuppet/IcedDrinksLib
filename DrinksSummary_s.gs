@@ -45,9 +45,9 @@ DrinksSummary.prototype = {
    */
   toString: function()
   {
-    var s="DS (" + this.date + ")\n"
+    var s="DrinksSummary (" + this.date + ")\n"
     for (var si=0; si < this.numSites; si++) {
-      s += "  " + this.siteNames[si] + ": " + this.site[si].drinks.toString();
+      s += "  " + this.siteNames[si] + ": " + this.site[si].drinks.toString() + "\n";
     }
     
     return s;

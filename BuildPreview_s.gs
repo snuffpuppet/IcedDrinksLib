@@ -44,7 +44,7 @@ BuildPreview.prototype = {
         var dayOffset=buildId==1?this.MondayOffset:this.ThursdayOffset;
         var offset=siteOffset + dayOffset + ageOffset;
         site.drinks.count[dt] = parseInt(drinkData[offset]);
-        Logger.log("  " + dt + ": " + siteNames[si] + " found (" + drinkData[offset] + ") at offset " + offset);
+        //Logger.log("  " + dt + ": " + siteNames[si] + " found (" + drinkData[offset] + ") at offset " + offset);
       }
     }
     Logger.log("  BuildPreview got Targets:")

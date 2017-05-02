@@ -86,7 +86,7 @@ BuildTable.prototype = {
  */
   setNewTargets: function(targets)
   {
-    Logger.log("===> BuildTable.setNewTargets");
+    Logger.log("===> BuildTable.setNewTargets for buildId " + this.buildId);
     Logger.log(targets.toString());
     
     for (var si=0; si<targets.numSites; si++) {
