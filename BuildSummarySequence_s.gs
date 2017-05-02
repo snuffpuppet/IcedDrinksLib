@@ -48,7 +48,7 @@ BuildSummarySequence.prototype = {
               soldAmounts[soldAmounts.length-1] += deadDrinks.count[drink];
           }
           else
-            Logger.log("Couldn't find sold info for %s in %s, skipping", drink, site);
+            Logger.log("Couldn't find sold data for %s drinks at %s, summary #%s - skipping", drink, site, si);
         }
         // soldAmounts contains all the sold values for this drink (and may even be empty for newly added drinks)
         inFridgeNow = this.summaries[0].site[siteNum].inFridge.count[drink];

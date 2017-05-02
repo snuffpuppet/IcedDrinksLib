@@ -30,7 +30,6 @@ BuildPreview.prototype = {
   getTargets: function(ageOffset, buildId, siteNames, drinkTypes)
   {
     var targets = new DrinksSummary(new Date(), siteNames, drinkTypes);
-    Logger.log("==> BuildPreview.getTargets(ageOffset: " + ageOffset + ", buildId: " + buildId + ")");
     
     for (var dti=0; dti <drinkTypes.length; dti++) {
       var dt = drinkTypes[dti];
@@ -47,9 +46,6 @@ BuildPreview.prototype = {
         //Logger.log("  " + dt + ": " + siteNames[si] + " found (" + drinkData[offset] + ") at offset " + offset);
       }
     }
-    Logger.log("  BuildPreview got Targets:")
-    Logger.log(targets.toString());
-    Logger.log("<==");
     
     return targets;
   },
@@ -62,7 +58,12 @@ BuildPreview.prototype = {
    * @returns {Object} - a DrinksSumamry object containing the targets
    */
   getNewTargets: function(buildId, siteNames, drinkTypes) {
-    return this.getTargets(this.NewOffset, buildId, siteNames, drinkTypes);
+    Logger.log("<<< Getting New targets from Build Preview sheet (buildId: %s) >>>", buildId); 
+    
+    var targets = this.getTargets(this.NewOffset, buildId, siteNames, drinkTypes);
+    Logger.log("--- New BuildPreview targets:\n%s", targets.toString());
+    
+    return targets;
   },
 
   /*
@@ -98,8 +99,10 @@ BuildPreview.prototype = {
    * @param {Object} drinksSummary - a DrinksSummary object containing the iced drink counts accross all the sites we are working with
    */
   setNewTargets: function(buildId, drinksSummary) {
-    Logger.log("==> BuildPreview.setNewTargets for " + drinksSummary.site[0].drinks.drinkTypes.length + " drinks accross " + drinksSummary.numSites + " sites ");
+    Logger.log("<<< Setting new Build Preview targets for buildId %s", buildId);
+    Logger.log("--- drinkTypes: [%s], siteNames [%s]", drinksSummary.site[0].drinks.drinkTypes, drinksSummary.siteNames);
     Logger.log(drinksSummary.toString());
+    
     this.setTargets(this.NewOffset, buildId, drinksSummary);
   },
 
@@ -109,8 +112,10 @@ BuildPreview.prototype = {
    * @param {Object} drinksSummary - a DrinksSummary object containing the iced drink counts accross all the sites we are working with
    */
   setPrevTargets: function(buildId, drinksSummary) {
-    Logger.log("==> BuildPreview.setPrevTargets for " + drinksSummary.site[0].drinks.drinkTypes.length + " drinks accross " + drinksSummary.numSites + " sites ");
+    Logger.log("<<< Setting previous Build Preview targets for buildId %s", buildId);
+    Logger.log("--- drinkTypes: [%s], siteNames [%s]", drinksSummary.site[0].drinks.drinkTypes, drinksSummary.siteNames);
     Logger.log(drinksSummary.toString());
+    
     this.setTargets(this.PrevOffset, buildId, drinksSummary);
   }
 }

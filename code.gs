@@ -133,6 +133,7 @@ function logBuild(buildId, fileIds)
   var prevBuild;
   var curBuild;
   
+  Logger.log("<<< Logging new build for buildId %s >>>", buildId);
   for (var si=0; si< prevSummary.site.length; si++) {
     prevBuild = prevSummary.site[si];
     curBuild = summary.site[si];
@@ -156,7 +157,9 @@ function logBuild(buildId, fileIds)
     }
     curBuild.sold = sold;
   }
-    
+  
+  Logger.log("--- Appending logs for the following summary:\n%s", summary.toString());
+  
   history.appendBuildSummary(summary);
   totals.appendBuildTotals(summary);
   
@@ -191,10 +194,10 @@ function generateTargets(buildId, fileIds)
   var history = new BuildHistory(fileIds);  // Grab the previous 'n' build histories of the other build
   var soldHistory = history.getBuildSummarySequence(config.sites, config.drinkTypes, workingBuildId, config.nWeeks);
   
-  Logger.log("==== generateTargets(buildId: " + buildId + ") ====");
-  Logger.log("=> History over " + config.nWeeks + " weeks");
+  Logger.log("<<< Generating new build targets for buildId %s using %s weeks of data >>>", buildId, config.nWeeks);
+  
   for (var i=0; i<soldHistory.summaries.length; i++) {
-    Logger.log("=> history[" + i + "]:");
+    Logger.log("--- Build History week %s:", i);
     Logger.log(soldHistory.summaries[i].toString());
   }
   
@@ -228,7 +231,7 @@ function generateTargets(buildId, fileIds)
   // get averaged sold amounts from build history
   var targets = soldHistory.generateSoldSummary(config, soldDrinksAggregator);
   
-  Logger.log("=== New Targets ===");
+  Logger.log("--- New Targets generated:");
   Logger.log(targets.toString());
   
   // Now we have new build targets for all the sites, push them to the build preview
