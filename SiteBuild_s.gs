@@ -34,7 +34,7 @@ SiteBuild.prototype = {
     s += "[bt: " + this.buildTo.toString() + "]\n";
     s += "[if: " + this.inFridge.toString() + "]\n";
     s += "[d: " + this.dead.toString() + "]\n";
-    s += "[s: " + this.sold ? this.sold.toString() : "null" + "]\n";
+    s += "[s: " + (this.sold ? this.sold.toString() : "null") + "]\n";
     
     return s;
   }

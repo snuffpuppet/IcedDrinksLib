@@ -99,8 +99,8 @@ BuildPreview.prototype = {
    * @param {Object} drinksSummary - a DrinksSummary object containing the iced drink counts accross all the sites we are working with
    */
   setNewTargets: function(buildId, drinksSummary) {
-    Logger.log("<<< Setting new Build Preview targets for buildId %s", buildId);
-    Logger.log("--- drinkTypes: [%s], siteNames [%s]", drinksSummary.site[0].drinks.drinkTypes, drinksSummary.siteNames);
+    Logger.log("<<< Setting new Build Preview targets for buildId %s >>>", buildId);
+    Logger.log("--- drinkTypes: %s, siteNames %s", drinksSummary.site[0].drinks.drinkTypes, drinksSummary.siteNames);
     Logger.log(drinksSummary.toString());
     
     this.setTargets(this.NewOffset, buildId, drinksSummary);
@@ -112,8 +112,8 @@ BuildPreview.prototype = {
    * @param {Object} drinksSummary - a DrinksSummary object containing the iced drink counts accross all the sites we are working with
    */
   setPrevTargets: function(buildId, drinksSummary) {
-    Logger.log("<<< Setting previous Build Preview targets for buildId %s", buildId);
-    Logger.log("--- drinkTypes: [%s], siteNames [%s]", drinksSummary.site[0].drinks.drinkTypes, drinksSummary.siteNames);
+    Logger.log("<<< Setting previous Build Preview targets for buildId %s >>>", buildId);
+    Logger.log("--- drinkTypes: %s, siteNames %s", drinksSummary.site[0].drinks.drinkTypes, drinksSummary.siteNames);
     Logger.log(drinksSummary.toString());
     
     this.setTargets(this.PrevOffset, buildId, drinksSummary);

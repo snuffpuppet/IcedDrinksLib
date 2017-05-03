@@ -113,6 +113,7 @@ function logBuild(buildId, fileIds)
 {
   ASSERT_TRUE(typeof buildId == "number", "logBuild: invalid buildId");
   ASSERT_TRUE(typeof fileIds !== "undefined", "logBuild: undefined fileIds");
+  Logger.log("[LB] <<< Logging new build for buildId %s >>>", buildId);
   
   var config = getConfig(fileIds.tracker);
   var trackerId = fileIds.tracker;
@@ -121,19 +122,23 @@ function logBuild(buildId, fileIds)
   //var sites = new Sites(config.sites);
   var buildTable = new BuildTable(buildId, fileIds);
   
+  Logger.log("[LB] --- Getting build summary from build spreadsheet (buildId: %s, %s, %s) >>>", buildId, config.sites, config.drinkTypes);
   var summary = buildTable.getBuildSummary(config.sites, config.drinkTypes);
+  Logger.log("[LB] --- Build spreadsheet snapshot:\n%s", summary.toString());
   
   // Have the current build summary, now need to calculate the 'sold' values
   var history = new BuildHistory(fileIds);
   var totals = new BuildHistoryTotals(fileIds);
   
-  var prevSummary = history.getBuildSummary(config.sites, config.drinkTypes, summary.buildId == 1 ? 2 : 1);
+  var prevBuildId = summary.buildId == 1 ? 2 : 1;
+  Logger.log("[LB] --- Getting previous build from logs to calculate sold values (buildId: %s, %s, %s) >>>", prevBuildId, config.sites, config.drinkTypes);
+  var prevSummary = history.getBuildSummary(config.sites, config.drinkTypes, prevBuildId);
+  Logger.log("[LB] --- Previous logged build:\n%s", summary.toString());
   
   var sold;
   var prevBuild;
   var curBuild;
   
-  Logger.log("<<< Logging new build for buildId %s >>>", buildId);
   for (var si=0; si< prevSummary.site.length; si++) {
     prevBuild = prevSummary.site[si];
     curBuild = summary.site[si];
@@ -158,7 +163,7 @@ function logBuild(buildId, fileIds)
     curBuild.sold = sold;
   }
   
-  Logger.log("--- Appending logs for the following summary:\n%s", summary.toString());
+  Logger.log("[LB] --- Appending logs for the following summary:\n%s", summary.toString());
   
   history.appendBuildSummary(summary);
   totals.appendBuildTotals(summary);
@@ -325,7 +330,6 @@ function _deprecatedGenerateTargets(buildId, fileIds)
         else
           Loggser.log("  Cancelling BUMP UP for " + targets.siteNames[siteNum] + ": " + drink + " as is not in configured drinkTypes");
       }
-      //}
     }
   }
   
@@ -334,6 +338,7 @@ function _deprecatedGenerateTargets(buildId, fileIds)
   preview.setNewTargets(buildId, targets);
   
   // grab the last build done for this same buildId to update the prev fields
+  Logger.log("<<< Getting previous build from logs for %s, buildId: %s >>>", config.sites, buildId);
   var prevBuild = history.getBuildSummary(config.sites, config.drinkTypes, buildId);
   preview.setPrevTargets(buildId, prevBuild.getBuildToSummary(config.drinkTypes));
 }
