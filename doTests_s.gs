@@ -13,7 +13,7 @@ function tDrinksExpected(drinks, expected) {
 
 function tBuildPreview(config, fileIds) {
   var drinkTypes = config["drinkTypes"];
-  var bp = new BuildPreview(fileIds);
+  var bp = new BuildPreview(config, fileIds);
   //var bunker = new Site(config, "bunker");
   //var jmh = new
   var expected = [{soy: 58,fc: 114,fcTriple:54,light:33,darkChoc:22,darkMocha:20,darkSoyChoc:null,dairyChoc:26,dairyChocFlav:null},
@@ -132,11 +132,12 @@ function tGenerateTargets(buildId, fileIds)
 function doTests() {
   // Dev & testing file Ids
   var newFileIds = getFileIds("1Ot_w-t0raqORz3P0RWHZzutR8j1JqdELeOIctXKGYZY", 
-                               "1g5VBsASR6b9KgUSwB-r9OW64AGrAU1L9ga_3j46_Nos", 
-                               "1XL1pSr63mjCVO6JJpOBowbiDlC0CCIHLrf7yKI__bew");
+                              "1g5VBsASR6b9KgUSwB-r9OW64AGrAU1L9ga_3j46_Nos", 
+                              "1XL1pSr63mjCVO6JJpOBowbiDlC0CCIHLrf7yKI__bew",
+                              "112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
 
   var config = getConfig(newFileIds.tracker);
-  
+  Logger.log("doTests()..................................................................");
   //ASSERT_TRUE(tBuildPreview(config, newFileIds), "tBuildPreview failed");
   //ASSERT_TRUE(tBuildTable(config, newFileIds), "tBuildTable failed");
   //ASSERT_TRUE(tLogHistory(config, 2, newFileIds), "tLogHistory failed");
@@ -149,4 +150,11 @@ function doTests() {
   generateThursdayTargets(newFileIds);
   //mondayBuildTrigger(newFileIds);
   //thursdayBuildTrigger(newFileIds);
+  //logThursdayBuild(newFileIds);
+  //var preview = new BuildPreview(config, newFileIds);
+  //var targets = preview.getNewTargets(1);
+  //Logger.log(targets);
+  //var table = new BuildTable(1, newFileIds);
+  //table.setNewTargets(config.sites, config.drinkTypes, targets);
+  //pushTargets(2, newFileIds);
 }

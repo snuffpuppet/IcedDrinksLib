@@ -18,13 +18,15 @@ function DrinksSummary(date, siteNames, drinkTypes) {
   ASSERT_TRUE(typeof drinkTypes != "undefined" && siteNames instanceof Array, "DrinksSummary: drinkTypes argument invalid type");
   
   this.siteNames = siteNames
-  this.numSites = siteNames.length;
+  this.numSites = 0;
   this.date = date;
   this.drinkTypes = drinkTypes;
   this.site = [];
+  /*
   for (var si=0; si < siteNames.length; si++) {
     this.site[si] = { siteInfo: new Site(siteNames, si), drinks: new IcedDrinks(drinkTypes)};
   }
+  */
 }
 
 DrinksSummary.prototype = {
@@ -35,8 +37,21 @@ DrinksSummary.prototype = {
   */
   addDrinks: function(siteId, drinks)
   {
-    ASSERT_TRUE(siteId >= 0 && siteId < this.numSites, "DrinksSummary.addDrinks: invalid siteId:" + siteId);
+    ASSERT_TRUE(siteId >= 0 && siteId <= this.numSites, "DrinksSummary.addDrinks: invalid siteId:" + siteId);
+    this.site[siteId] = {};
+    this.site[siteId].siteInfo = new Site(this.siteNames, siteId);
     this.site[siteId].drinks = drinks;
+    this.numSites++;
+  },
+  
+  setCount: function(siteId, drink, count) {
+    ASSERT_TRUE(siteId >= 0 && siteId < this.numSites, "DrinksSummary.addDrinks: invalid siteId:" + siteId);
+    this.site[siteId].drinks.count[drink] = count;
+  },
+  
+  hasSiteNum: function(siteId)
+  {
+    return (typeof(this.site[siteId]) !== 'undefined');
   },
   
   /*

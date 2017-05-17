@@ -133,17 +133,18 @@ function logBuild(buildId, fileIds)
   var prevBuildId = summary.buildId == 1 ? 2 : 1;
   Logger.log("[LB] --- Getting previous build from logs to calculate sold values (buildId: %s, %s, %s) >>>", prevBuildId, config.sites, config.drinkTypes);
   var prevSummary = history.getBuildSummary(config.sites, config.drinkTypes, prevBuildId);
-  Logger.log("[LB] --- Previous logged build:\n%s", summary.toString());
+  Logger.log("[LB] --- Previous logged build:\n%s", prevSummary.toString());
   
   var sold;
   var prevBuild;
   var curBuild;
   
-  for (var si=0; si< prevSummary.site.length; si++) {
+  for (var si=0; si< summary.site.length; si++) {
     prevBuild = prevSummary.site[si];
     curBuild = summary.site[si];
     sold = new IcedDrinks(config.drinkTypes);
-    if (curBuild != null) {
+    // if we have buid data for this site on both builds, calculate the sold values
+    if (curBuild && prevBuild) {
       // Calculate the sold values for all the drinks
       // Sold = previous buildTo - current inFridge - current dead (expired) drinks
       for (var dti=0; dti < sold.drinkTypes.length; dti++) {
@@ -155,9 +156,11 @@ function logBuild(buildId, fileIds)
           var soldCount = numDrinksLastBuild - curBuild.inFridge.count[drink] - curBuild.dead.count[drink];
           sold.add(drink, soldCount > 0 ? soldCount : 0);
         }
+        /*
         else { // new drink, generate a sold value so that new build stays stationary
-          sold.add(drink, curBuild.buildTo[drink].count / config.buildFactor(buildId==1?2:1));
+          sold.add(drink, Math.round(curBuild.buildTo.count[drink] / config.buildFactor(buildId==1?2:1)));
         }
+        */
       }
     }
     curBuild.sold = sold;
@@ -206,7 +209,7 @@ function generateTargets(buildId, fileIds)
     Logger.log(soldHistory.summaries[i].toString());
   }
   
-  var soldDrinksAggregator = function(config, buildId, siteNum, drink, numWeeks, soldAmounts, inFridgeNow) {
+  var soldDrinksAggregator = function(config, buildId, siteNum, drink, numWeeks, soldAmounts, inFridgeNow, buildToNow) {
     var averageSold;
     var newBuildNum;
     var buildFactor = config.buildFactor(buildId===1?2:1); // generating targets for next buid, not this one
@@ -240,12 +243,14 @@ function generateTargets(buildId, fileIds)
   Logger.log(targets.toString());
   
   // Now we have new build targets for all the sites, push them to the build preview
-  var preview = new BuildPreview(fileIds);
+  var preview = new BuildPreview(config, fileIds);
   preview.setNewTargets(buildId, targets);
   
   // grab the last build done for this same buildId to update the prev fields
   var prevBuild = history.getBuildSummary(config.sites, config.drinkTypes, buildId);
   preview.setPrevTargets(buildId, prevBuild.getBuildToSummary(config.drinkTypes));  
+  
+  Logger.log("--- Finished New Target generation ---");
 }
 
 /*
@@ -334,7 +339,7 @@ function _deprecatedGenerateTargets(buildId, fileIds)
   }
   
   // Now we have new build targets for all the sites, push them to the build preview
-  var preview = new BuildPreview(fileIds);
+  var preview = new BuildPreview(config, fileIds);
   preview.setNewTargets(buildId, targets);
   
   // grab the last build done for this same buildId to update the prev fields
@@ -385,19 +390,10 @@ function pushTargets(buildId, fileIds) {
 
   var config = getConfig(fileIds.tracker);
   
-  var preview = new BuildPreview(fileIds);
-  var targets = preview.getNewTargets(buildId, config.sites, config.drinkTypes);
+  var preview = new BuildPreview(config, fileIds);
+  var targets = preview.getNewTargets(buildId);
   
   var table = new BuildTable(buildId, fileIds);
-  table.setNewTargets(targets);
-}
-
-/*
- * Add a convenience function to Date objects so that we can cleanly insert them into tables
- * @returns {string} - a string of the format DD/MM/YYYY
- */
-Date.prototype.toOzyDateString = function() {
-  var zeroPad=function(n) { if (n<10) return "0" + n; else return n; }
-  return zeroPad(this.getDate()) + "/" + zeroPad(this.getMonth()+1) + "/" + this.getFullYear();
+  table.setNewTargets(config.sites, config.drinkTypes, targets);
 }
 

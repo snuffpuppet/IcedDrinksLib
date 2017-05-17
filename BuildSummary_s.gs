@@ -1,5 +1,6 @@
 /*
- * Representation of a single sites total Iced Drink build
+ * Representation of a total Iced Drink build
+ * Contains an index of sites into SiteBuild's representing a single site's build for this summary
  * This is one of the main workhorses of the code as it is used as the basic item upon which
  * we do calculations, and translations to and from physical representations of the builds
  * @constructor
@@ -36,11 +37,13 @@ BuildSummary.prototype = {
   getBuildToSummary: function(drinkTypes) {
     var dSum = new DrinksSummary(this.date, this.siteNames, drinkTypes);
     ASSERT_TRUE(this.numSites > 0, "BuildSummary.getBuildToSummary - BuildSummary has no sites, cannot get drinks");
+    Logger.log("BuildSummary.getBuildToSummary: summary = %s", this.toString());
     
     for (var si=0; si< this.numSites; si++) {
       dSum.addDrinks(si, this.site[si].buildTo);
     }
     
+    Logger.log("-- returning DrinksSummary: %s", dSum.toString());
     return dSum;
   },
   

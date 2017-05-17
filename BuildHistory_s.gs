@@ -65,7 +65,7 @@ BuildHistory.prototype = {
     var summaryData;
     var siteBuildData;
     
-    Logger.log("==> BuildSummary.getBuildSummaries(buildId: " + buildId + ", numSummaries:" + numSummaries);
+    Logger.log("==> BuildHistory.getBuildSummaries(buildId: " + buildId + ", numSummaries:" + numSummaries);
     Logger.log("  - #sites:" + siteNames.length + " + #drinkTypes:" + drinkTypes.length + " + nWeeks:" + numSummaries + " = " + siteNames.length * drinkTypes.length + " rows per build");
     Logger.log("  - grabbing " + rowDepth + " rows from Build History table");
 
@@ -86,21 +86,26 @@ BuildHistory.prototype = {
         
         summary = new BuildSummary(rowDate, siteNames, buildId);
         buildDate=new Date(rowDate.getTime());
+
         for (var si=0; si<siteNames.length; si++) {
           siteBuildData = ArrayLib.filterByText(summaryData, 4, siteNames[si]);
-          buildTo = new IcedDrinks(drinkTypes);
-          inFridge = new IcedDrinks(drinkTypes);
-          dead = new IcedDrinks(drinkTypes);
-          sold = new IcedDrinks(drinkTypes);
-          for (var i=0; i<siteBuildData.length; i++) {
-            var drink = siteBuildData[i][5];
-            buildTo.add(drink, parseInt(siteBuildData[i][6]));
-            inFridge.add(drink, parseInt(siteBuildData[i][7]));
-            dead.add(drink, parseInt(siteBuildData[i][8]));
-            sold.add(drink, parseInt(siteBuildData[i][9]));
+          Logger.log(" --Filter by '%s' gives %s rows", siteNames[si], siteBuildData.length);
+          
+          if (siteBuildData.length > 0) {
+            buildTo = new IcedDrinks(drinkTypes);
+            inFridge = new IcedDrinks(drinkTypes);
+            dead = new IcedDrinks(drinkTypes);
+            sold = new IcedDrinks(drinkTypes);
+            for (var i=0; i<siteBuildData.length; i++) {
+              var drink = siteBuildData[i][5];
+              buildTo.add(drink, parseInt(siteBuildData[i][6]));
+              inFridge.add(drink, parseInt(siteBuildData[i][7]));
+              dead.add(drink, parseInt(siteBuildData[i][8]));
+              sold.add(drink, parseInt(siteBuildData[i][9]));
+            }
+            build = new SiteBuild(buildDate, new Site(siteNames,si), buildId, buildTo, inFridge, dead, sold);
+            summary.addBuild(build);
           }
-          build = new SiteBuild(buildDate, new Site(siteNames,si), buildId, buildTo, inFridge, dead, sold);
-          summary.addBuild(build);
         }
         summaries[summaries.length] = summary;
       

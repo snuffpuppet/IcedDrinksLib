@@ -4,6 +4,8 @@
  * @param {string} message - error message if test fails
  */
 function ASSERT_TRUE(test, message) {
-  if (!test)
+  if (!test) {
+    Logger.log('!!! EXCEPTION THROWN: %s', message);
     throw (message);
+  }
 }
