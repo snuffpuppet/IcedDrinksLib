@@ -110,7 +110,7 @@ BuildPreview.prototype = {
           drinkRow[0][offset] = value;
         }
         else {
-          Logger.log("NULL found for %s (%s) - setting '-'", this.siteNames[si], drink);
+          Logger.log("NULL/0 found for %s (%s) - setting '-'", this.siteNames[si], drink);
           drinkRow[0][offset] = "-";  // if value is not a number, set cell to indicate that no number was generated
         }
         drinkRange.setValues(drinkRow);

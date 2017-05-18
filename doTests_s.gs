@@ -133,8 +133,8 @@ function doTests() {
   // Dev & testing file Ids
   var newFileIds = getFileIds("1Ot_w-t0raqORz3P0RWHZzutR8j1JqdELeOIctXKGYZY", 
                               "1g5VBsASR6b9KgUSwB-r9OW64AGrAU1L9ga_3j46_Nos", 
-                              "1XL1pSr63mjCVO6JJpOBowbiDlC0CCIHLrf7yKI__bew",
-                              "112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
+                              "1XL1pSr63mjCVO6JJpOBowbiDlC0CCIHLrf7yKI__bew");
+                              //"112Zh2DFjJVbwMeRmUzc7osv6B_ZY4GKeKU5NKc80owc");
 
   var config = getConfig(newFileIds.tracker);
   Logger.log("doTests()..................................................................");
@@ -146,8 +146,8 @@ function doTests() {
   //tBuildHistory(config, newFileIds);
   //generateTargets(1, newFileIds);
   //tGenerateTargets(1, newFileIds);
-  //generateMondayTargets(newFileIds);
-  generateThursdayTargets(newFileIds);
+  generateMondayTargets(newFileIds);
+  //generateThursdayTargets(newFileIds);
   //mondayBuildTrigger(newFileIds);
   //thursdayBuildTrigger(newFileIds);
   //logThursdayBuild(newFileIds);

@@ -21,7 +21,7 @@ BuildSummarySequence.prototype = {
     var site;
     var siteNum;
     var drink;
-    var drinkNum;
+    var drinkNum, siteSummary;
     var soldAmounts = [];
     var soldDrinks, deadDrinks, inFridgeDrinks;
     var inFridgeNow, buildToNow;
@@ -43,10 +43,11 @@ BuildSummarySequence.prototype = {
         drink = this.drinkTypes[drinkNum];
         soldAmounts=[];
         for (si=0; si < this.summaries.length; si++) {
-          if (this.summaries[si].site[siteNum]) {
-            soldDrinks = this.summaries[si].site[siteNum].sold;
-            deadDrinks = this.summaries[si].site[siteNum].dead;
-            inFridgeDrinks = this.summaries[si].site[siteNum].dead;
+          siteSummary = this.summaries[si].site[siteNum];
+          if (siteSummary) {
+            soldDrinks = siteSummary.sold;
+            deadDrinks = siteSummary.dead;
+            inFridgeDrinks = siteSummary.inFridge;
             if (soldDrinks && soldDrinks.count[drink] != null) {
               if (inFridgeDrinks.count[drink] !== 0 || soldDrinks.count[drink] !== 0) {
                 soldAmounts[soldAmounts.length] = soldDrinks.count[drink];
@@ -54,13 +55,13 @@ BuildSummarySequence.prototype = {
                   soldAmounts[soldAmounts.length-1] += deadDrinks.count[drink];
               }
               else
-                Logger.log("inFridge and sold are 0 for %s at %s - new drink (summary #%s) - skipping", drink, site, si);
+                Logger.log("bId:%s, site:%s, %s - inFridge and sold are 0 (summary #%s) - skipping", this.buildId, siteNum, drink, si);
             }
             else
-              Logger.log("Couldn't find sold data for %s drinks at %s, summary #%s - skipping", drink, site, si);
+              Logger.log("bId:%s site:%s, %s - no sold data for %s (summary #%s) - skipping", this.buildId, siteNum, drink, site, si);
           }
           else
-            Logger.log("Couldn't find site %s in summary #%s (%s) - skipping", site, si, drink);
+            Logger.log("bId:%s site:%s, %s - no site %s in summary #%s - skipping", this.buildId, siteNum, drink, site, si);
         }
         // soldAmounts contains all the sold values for this drink (and may even be empty for newly added drinks)
         inFridgeNow = this.summaries[0].site[siteNum].inFridge.count[drink];
